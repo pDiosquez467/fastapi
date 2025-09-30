@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -8,6 +8,12 @@ class Alumno(BaseModel):
     padron: int
     nombre: str
     apelido: str
+    edad: int | None = None
+
+
+class AlumnoUpsert(BaseModel):
+    nombre: str
+    apellido: str
     edad: int | None = None
 
 
@@ -35,4 +41,18 @@ def show(padron: int) -> Alumno:
     for alumno in alumnos:
         if alumno.padron == padron:
             return alumno
-    raise HTTPException(status_code=404, detail="Alumno NO encontrado")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
+    )
+
+
+@app.post("/alumnos", status_code=status.HTTP_201_CREATED)
+def create(alumnoUpsert: AlumnoUpsert) -> Alumno:
+    alumno = Alumno(
+        padron=alumnos[-1].padron + 1,
+        nombre=alumnoUpsert.nombre,
+        apelido=alumnoUpsert.apellido,
+        edad=alumnoUpsert.edad,
+    )
+    alumnos.append(alumno)
+    return alumno
