@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -28,3 +28,11 @@ def root():
 @app.get("/alumnos")
 def list() -> list[Alumno]:
     return alumnos
+
+
+@app.get("/alumnos/{padron}")
+def show(padron: int) -> Alumno:
+    for alumno in alumnos:
+        if alumno.padron == padron:
+            return alumno
+    raise HTTPException(status_code=404, detail="Alumno NO encontrado")
