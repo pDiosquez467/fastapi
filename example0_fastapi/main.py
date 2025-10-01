@@ -19,10 +19,10 @@ class AlumnoUpsert(BaseModel):
 
 alumnos: list[Alumno] = [
     Alumno(padron=1015, nombre="Walter", apelido="White", edad=52),
-    Alumno(padron=1022, nombre="Jesse", apelido="Pinkman", edad=26),
-    Alumno(padron=1039, nombre="Skyler", apelido="White", edad=45),
-    Alumno(padron=1047, nombre="Saul", apelido="Goodman", edad=49),
-    Alumno(padron=1054, nombre="Gustavo", apelido="Fring", edad=50),
+    Alumno(padron=1016, nombre="Jesse", apelido="Pinkman", edad=26),
+    Alumno(padron=1017, nombre="Skyler", apelido="White", edad=45),
+    Alumno(padron=1018, nombre="Saul", apelido="Goodman", edad=49),
+    Alumno(padron=1019, nombre="Gustavo", apelido="Fring", edad=50),
 ]
 
 
@@ -47,12 +47,25 @@ def show(padron: int) -> Alumno:
 
 
 @app.post("/alumnos", status_code=status.HTTP_201_CREATED)
-def create(alumnoUpsert: AlumnoUpsert) -> Alumno:
+def create(alumno_upsert: AlumnoUpsert) -> Alumno:
     alumno = Alumno(
         padron=alumnos[-1].padron + 1,
-        nombre=alumnoUpsert.nombre,
-        apelido=alumnoUpsert.apellido,
-        edad=alumnoUpsert.edad,
+        nombre=alumno_upsert.nombre,
+        apelido=alumno_upsert.apellido,
+        edad=alumno_upsert.edad,
     )
     alumnos.append(alumno)
     return alumno
+
+
+@app.put("/alumnos/{padron}", status_code=status.HTTP_200_OK)
+def update(padron: int, alumno_upsert: AlumnoUpsert) -> Alumno:
+    for alumno in alumnos:
+        if alumno.padron == padron:
+            alumno.nombre = alumno_upsert.nombre
+            alumno.apelido = alumno_upsert.apellido
+            alumno.edad = alumno_upsert.edad
+            return alumno
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
+    )
