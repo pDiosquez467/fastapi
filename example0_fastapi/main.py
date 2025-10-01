@@ -69,3 +69,14 @@ def update(padron: int, alumno_upsert: AlumnoUpsert) -> Alumno:
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
     )
+
+
+@app.delete("/alumnos/{padron}")
+def delete(padron: int) -> Alumno:
+    for alumno in alumnos:
+        if alumno.padron == padron:
+            alumnos.remove(alumno)
+            return alumno
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
+    )
