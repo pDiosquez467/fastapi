@@ -38,12 +38,7 @@ def list() -> list[Alumno]:
 
 @app.get("/alumnos/{padron}")
 def show(padron: int) -> Alumno:
-    for alumno in alumnos:
-        if alumno.padron == padron:
-            return alumno
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
-    )
+    return buscar_alumno(padron)
 
 
 @app.post("/alumnos", status_code=status.HTTP_201_CREATED)
@@ -60,22 +55,23 @@ def create(alumno_upsert: AlumnoUpsert) -> Alumno:
 
 @app.put("/alumnos/{padron}", status_code=status.HTTP_200_OK)
 def update(padron: int, alumno_upsert: AlumnoUpsert) -> Alumno:
-    for alumno in alumnos:
-        if alumno.padron == padron:
-            alumno.nombre = alumno_upsert.nombre
-            alumno.apelido = alumno_upsert.apellido
-            alumno.edad = alumno_upsert.edad
-            return alumno
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
-    )
+    alumno = buscar_alumno(padron)
+    alumno.nombre = alumno_upsert.nombre
+    alumno.apelido = alumno_upsert.apellido
+    alumno.edad = alumno_upsert.edad
+    return alumno
 
 
 @app.delete("/alumnos/{padron}")
 def delete(padron: int) -> Alumno:
+    alumno = buscar_alumno(padron)
+    alumnos.remove(alumno)
+    return alumno
+
+
+def buscar_alumno(padron: int) -> Alumno:
     for alumno in alumnos:
         if alumno.padron == padron:
-            alumnos.remove(alumno)
             return alumno
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
