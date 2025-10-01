@@ -9,6 +9,7 @@ class Alumno(BaseModel):
     nombre: str
     apelido: str
     edad: int | None = None
+    notas: list[int] = []
 
 
 class AlumnoUpsert(BaseModel):
@@ -76,3 +77,9 @@ def buscar_alumno(padron: int) -> Alumno:
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Alumno NO encontrado"
     )
+
+
+@app.patch("/alumnos/{padron}/cargar_nota")
+def cargar_nota(padron: int, nota: int):
+    alumno = buscar_alumno(padron)
+    alumno.notas.append(nota)
