@@ -1,0 +1,23 @@
+meta {
+  name: update
+  type: http
+  seq: 6
+}
+
+put {
+  url: http://localhost:8000/alumnos/12
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "FAKE",
+    "apellido": "Alumno",
+    "edad": 98
+  }
+}
+
+settings {
+  encodeUrl: true
+}
