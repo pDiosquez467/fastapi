@@ -1,11 +1,28 @@
-from models.models import Alumno
+import csv
+import os
+import random
+
 from dependencies.dependencies import get_database
+from models.models import Alumno
+
+src_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
 
 
 def seed():
-    alumnos = [
-        Alumno(padron=1, nombre="Juan", apellido="Perez", edad=20),
-        Alumno(padron=2, nombre="Juan", apellido="Perez", edad=20),
-        Alumno(padron=3, nombre="Juan", apellido="Perez", edad=20),
-    ]
-    get_database().cargar_alumnos(alumnos)
+    cargar_alumnos(os.path.join(src_root, "resources", "alumnos.csv"))
+
+
+def cargar_alumnos(path):
+    alumnos = []
+    with open(path) as f:
+        csvFile = csv.DictReader(f, delimiter=";")
+        for linea in csvFile:
+            alumnos.append(
+                Alumno(
+                    padron=int(linea["Padron"]),
+                    nombre=linea["Nombre"],
+                    apellido=linea["Apellido"],
+                    edad=random.randint(18, 35),
+                )
+            )
+    get_database().cargar_alumnos(sorted(alumnos, key=lambda x: x.padron))
