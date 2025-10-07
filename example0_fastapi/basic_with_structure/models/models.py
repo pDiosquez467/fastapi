@@ -4,7 +4,7 @@ from pydantic import BaseModel
 class Alumno(BaseModel):
     padron: int
     nombre: str
-    apelido: str
+    apellido: str
     edad: int | None = None
     notas: list[int] = []
 
